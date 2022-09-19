@@ -15,23 +15,20 @@ function render(data, { xAttr, yAttr }) {
   const yValue = (d) => d[yAttr];
   const xScale = d3
     .scaleLinear()
-    .domain([0, d3.max(data.map(xValue))])
+    // .domain([0, d3.max(data.map(xValue))])
+    .domain(d3.extent(data.map(xValue)))
     .nice()
-    // .domain(d3.extent(data.map(xValue)))
     .range([0, innerWidth]);
   const yScale = d3
     .scaleLinear()
-    .domain([d3.max(data.map(yValue)), 0])
+    // .domain([d3.max(data.map(yValue)), 0])
+    .domain(d3.extent(data.map(yValue)))
     .nice()
-    // .domain(d3.extent(data.map(yValue)))
-    .range([0, innerHeight]);
+    .range([innerHeight, 0]);
   const cScale = d3
     .scaleOrdinal()
     .domain(data.map((d) => d["class"]))
     .range(palette);
-
-  const xAxis = d3.axisBottom(xScale);
-  const yAxis = d3.axisLeft(yScale);
 
   plotContainer
     .selectAll("g#plot")
@@ -55,17 +52,23 @@ function render(data, { xAttr, yAttr }) {
     .text("Iris distribution");
 
   // draw X AXIS & LABEL
-  plot.append("g").call(xAxis).attr("transform", `translate(0, ${innerHeight})`);
+  plot
+    .append("g")
+    .call(d3.axisBottom(xScale))
+    .attr("id", "x-axis")
+    .attr("transform", `translate(0, ${innerHeight})`);
   plot
     .append("text")
+    .attr("id", "x-label")
     .attr("text-anchor", "middle")
     .attr("transform", `translate(${innerWidth / 2}, ${innerHeight + 40})`)
     .text(xAttr);
 
   // draw Y AXIS & LABEL
-  plot.append("g").call(yAxis);
+  plot.append("g").call(d3.axisLeft(yScale)).attr("id", "y-axis");
   plot
     .append("text")
+    .attr("id", "y-label")
     .attr("text-anchor", "middle")
     .attr("transform", `translate(${-40}, ${innerHeight / 2}) rotate(270)`)
     .text(yAttr);
@@ -74,28 +77,56 @@ function render(data, { xAttr, yAttr }) {
   plot
     .selectAll("circle")
     .data(data)
-    .enter()
-    .append("circle")
+    .join("circle")
     .attr("cx", (d) => xScale(xValue(d)))
     .attr("cy", (d) => yScale(yValue(d)))
     .attr("fill", (d) => cScale(d["class"]))
+    .attr("opacity", 0.6)
     .attr("r", 5);
+
+  return {
+    update({ xAttr, yAttr }) {
+      const xValue = (d) => d[xAttr];
+      const yValue = (d) => d[yAttr];
+      xScale.domain(d3.extent(data.map(xValue))).nice();
+      yScale.domain(d3.extent(data.map(yValue))).nice();
+      plot.select("#x-axis").transition().duration(1000).call(d3.axisBottom(xScale));
+      plot.select("#y-axis").transition().duration(1000).call(d3.axisLeft(yScale));
+      plot.select("#x-label").text(xAttr);
+      plot.select("#y-label").text(yAttr);
+      plot
+        .selectAll("circle")
+        .data(data)
+        .join("circle", (update) =>
+          update
+            .transition()
+            .duration(1000)
+            .attr("cx", (d) => xScale(xValue(d)))
+            .attr("cy", (d) => yScale(yValue(d)))
+        );
+    },
+  };
 }
 
 async function main() {
   const dataset = await d3.csv(DATA_PATH);
+  const xAttrSelect = d3.select("#xAttrSelect");
+  const yAttrSelect = d3.select("#yAttrSelect");
   const axisAttrs = {
-    xAttr: "sepal length",
-    yAttr: "sepal width",
+    xAttr: xAttrSelect.node().value,
+    yAttr: yAttrSelect.node().value,
   };
-  render(dataset, axisAttrs);
-  d3.select("#xAttrSelect").on("change", (event) => {
+  // TODO: refactor with class
+  const chart = render(dataset, axisAttrs);
+  xAttrSelect.on("change", (event) => {
     axisAttrs.xAttr = event.target.value;
-    render(dataset, axisAttrs);
+    chart.update(axisAttrs);
+    // render(dataset, axisAttrs);
   });
-  d3.select("#yAttrSelect").on("change", (event) => {
+  yAttrSelect.on("change", (event) => {
     axisAttrs.yAttr = event.target.value;
-    render(dataset, axisAttrs);
+    chart.update(axisAttrs);
+    // render(dataset, axisAttrs);
   });
 }
 
