@@ -31,7 +31,7 @@ class ScatterChart {
       .select("svg#plot-container")
       .attr("width", width)
       .attr("height", height);
-    const legendContainer = d3.select("svg#plot-legend");
+    const legendContainer = d3.select("svg#plot-legend").attr("width", 150);
     this.xScale = d3.scaleLinear().domain(this.xDomain).nice().range([0, this.innerWidth]);
     this.yScale = d3.scaleLinear().domain(this.yDomain).nice().range([this.innerHeight, 0]);
     const cScale = d3
@@ -57,6 +57,7 @@ class ScatterChart {
       .attr("x", this.innerWidth / 2)
       .attr("y", -20)
       .attr("text-anchor", "middle")
+      .style("font-size", "24px")
       .text("Iris distribution");
     // draw X AXIS, LABEL and GRID LINES
     this.plot
@@ -69,7 +70,7 @@ class ScatterChart {
       .attr("id", "x-label")
       .attr("text-anchor", "middle")
       .attr("transform", `translate(${this.innerWidth / 2}, ${this.innerHeight + 40})`)
-      .text(this.axes.x);
+      .text(`${this.axes.x} (cm)`);
     this.plot
       .append("g")
       .attr("opacity", "0.1")
@@ -82,11 +83,13 @@ class ScatterChart {
       .attr("id", "y-label")
       .attr("text-anchor", "middle")
       .attr("transform", `translate(${-40}, ${this.innerHeight / 2}) rotate(270)`)
-      .text(this.axes.y);
+      .text(`${this.axes.y} (cm)`);
     this.plot
       .append("g")
       .attr("opacity", "0.1")
       .call(d3.axisLeft(this.yScale).tickSize(-this.innerWidth).tickFormat(""));
+    // prepare TOOLTIP
+    const tooltip = d3.select("div#tooltip");
     // draw circles, DATA POINT
     this.plot
       .selectAll("circle")
@@ -98,7 +101,25 @@ class ScatterChart {
       .attr("stroke", "white")
       .attr("stroke-width", "1px")
       .attr("opacity", 0.7)
-      .attr("r", 6);
+      .attr("r", 6)
+      .on("mouseenter", (event, d) => {
+        tooltip
+          .style("visibility", "visible")
+          .html(
+            this.data.columns
+              .map((v) => {
+                const isX = this.axes.x == v;
+                const isY = this.axes.y == v;
+                return `${v}${isX ? " (x)" : isY ? " (y)" : ""}: ${d[v]}`;
+              })
+              .join("<br/>")
+          )
+          .style("left", `${event.clientX + 10}px`)
+          .style("top", `${event.clientY}px`);
+      })
+      .on("mouseleave", () => {
+        tooltip.style("visibility", "hidden");
+      });
     // draw LEGENDS
     legendContainer
       .selectAll("circle")
@@ -143,7 +164,7 @@ async function main() {
   const dataset = await d3.csv(DATA_PATH);
   const layout = {
     width: 800,
-    height: 400,
+    height: 480,
     margin: { left: 50, right: 50, top: 50, bottom: 50 },
     palette: ["#003f5c", "#bc5090", "#ffa600"],
   };

@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scatter Plots</title>
-    <link rel="stylesheet" href="tailwind.css" />
     <link rel="stylesheet" href="index.css" />
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,7 +16,7 @@
         <svg id="plot-container"></svg>
         <div class="flex gap-x-8 p-4">
           <div>
-            <span class="text-gray-700">X Axis</span>
+            <span class="text-slate-700">X Axis</span>
             <select id="x-attr-select" class="block">
               <option value="sepal length" label="sepal length" selected></option>
               <option value="sepal width" label="sepal width"></option>
@@ -27,7 +26,7 @@
             <input type="checkbox" id="x-zero" /> Include Zero
           </div>
           <div>
-            <span class="text-gray-700">Y Axis</span>
+            <span class="text-slate-700">Y Axis</span>
             <select id="y-attr-select" class="block">
               <option value="sepal length" label="sepal length"></option>
               <option value="sepal width" label="sepal width"></option>
@@ -36,11 +35,13 @@
             </select>
             <input type="checkbox" id="y-zero" /> Include Zero
           </div>
+          <div class="flex-1"></div>
           <svg id="plot-legend"></svg>
         </div>
       </div>
+      <div id="tooltip" class="border-2 bg-white border-slate-900 p-2 absolute invisible"></div>
       <footer class="p-4 bg-slate-200">
-        <span class="text-sm text-gray-500 sm:text-center">
+        <span class="text-sm text-slate-700 sm:text-center">
           Scatter Plots by 311553005 于子緯
         </span>
       </footer>
