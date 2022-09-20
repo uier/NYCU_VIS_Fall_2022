@@ -5,33 +5,38 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scatter Plots</title>
+    <link rel="stylesheet" href="tailwind.css" />
     <link rel="stylesheet" href="index.css" />
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow&display=swap" rel="stylesheet" />
   </head>
-  <body class="h-screen">
+  <body class="h-screen font-['Barlow']">
     <div class="flex flex-col justify-between h-full">
-      <div class="max-w-5xl mx-auto mt-4 flex flex-wrap">
-        <svg></svg>
-        <div class="flex flex-col p-4">
-          <label class="block">
+      <div class="max-w-5xl mx-auto mt-8 flex flex-col">
+        <svg id="plot-container"></svg>
+        <div class="flex gap-x-8 p-4">
+          <div>
             <span class="text-gray-700">X Axis</span>
-            <select id="xAttrSelect" class="block">
-              <option value="sepal length" label="sepal length"></option>
-              <option value="sepal width" label="sepal width" selected></option>
-              <option value="petal length" label="petal length"></option>
-              <option value="petal width" label="petal width"></option>
-            </select>
-          </label>
-          <div class="my-2"></div>
-          <label class="block">
-            <span class="text-gray-700">Y Axis</span>
-            <select id="yAttrSelect" class="block">
+            <select id="x-attr-select" class="block">
               <option value="sepal length" label="sepal length" selected></option>
               <option value="sepal width" label="sepal width"></option>
               <option value="petal length" label="petal length"></option>
               <option value="petal width" label="petal width"></option>
             </select>
-          </label>
+            <input type="checkbox" id="x-zero" /> Include Zero
+          </div>
+          <div>
+            <span class="text-gray-700">Y Axis</span>
+            <select id="y-attr-select" class="block">
+              <option value="sepal length" label="sepal length"></option>
+              <option value="sepal width" label="sepal width"></option>
+              <option value="petal length" label="petal length" selected></option>
+              <option value="petal width" label="petal width"></option>
+            </select>
+            <input type="checkbox" id="y-zero" /> Include Zero
+          </div>
+          <svg id="plot-legend"></svg>
         </div>
       </div>
       <footer class="p-4 bg-slate-200">

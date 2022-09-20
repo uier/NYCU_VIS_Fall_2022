@@ -15,26 +15,30 @@ class ScatterChart {
   get yValue() {
     return (d) => d[this.axes.y];
   }
+  get xDomain() {
+    return this.axes.xZero
+      ? [0, d3.max(this.data.map(this.xValue))]
+      : d3.extent(this.data.map(this.xValue));
+  }
+  get yDomain() {
+    return this.axes.yZero
+      ? [0, d3.max(this.data.map(this.yValue))]
+      : d3.extent(this.data.map(this.yValue));
+  }
   render() {
     const { width, height, margin, palette } = this.layout;
-    const plotContainer = d3.select("svg").attr("width", width).attr("height", height);
-    this.xScale = d3
-      .scaleLinear()
-      // .domain([0, d3.max(this.data.map(this.xValue))])
-      .domain(d3.extent(this.data.map(this.xValue)))
-      .nice()
-      .range([0, this.innerWidth]);
-    this.yScale = d3
-      .scaleLinear()
-      // .domain([d3.max(this.data.map(this.yValue)), 0])
-      .domain(d3.extent(this.data.map(this.yValue)))
-      .nice()
-      .range([this.innerHeight, 0]);
+    const plotContainer = d3
+      .select("svg#plot-container")
+      .attr("width", width)
+      .attr("height", height);
+    const legendContainer = d3.select("svg#plot-legend");
+    this.xScale = d3.scaleLinear().domain(this.xDomain).nice().range([0, this.innerWidth]);
+    this.yScale = d3.scaleLinear().domain(this.yDomain).nice().range([this.innerHeight, 0]);
     const cScale = d3
       .scaleOrdinal()
       .domain(this.data.map((d) => d["class"]))
       .range(palette);
-
+    // create plot body (<g>) in plotContainer (<svg>)
     plotContainer
       .selectAll("g#plot")
       .data([null])
@@ -42,9 +46,7 @@ class ScatterChart {
       .append("g")
       .attr("id", "plot")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
     this.plot = plotContainer.select("g#plot");
-
     // draw TITLE
     this.plot
       .selectAll("text#title")
@@ -56,8 +58,7 @@ class ScatterChart {
       .attr("y", -20)
       .attr("text-anchor", "middle")
       .text("Iris distribution");
-
-    // draw X AXIS & LABEL
+    // draw X AXIS, LABEL and GRID LINES
     this.plot
       .append("g")
       .call(d3.axisBottom(this.xScale))
@@ -69,8 +70,12 @@ class ScatterChart {
       .attr("text-anchor", "middle")
       .attr("transform", `translate(${this.innerWidth / 2}, ${this.innerHeight + 40})`)
       .text(this.axes.x);
-
-    // draw Y AXIS & LABEL
+    this.plot
+      .append("g")
+      .attr("opacity", "0.1")
+      .attr("transform", "translate(0," + this.innerHeight + ")")
+      .call(d3.axisBottom(this.xScale).tickSize(-this.innerHeight).tickFormat(""));
+    // draw Y AXIS, LABEL and GRID LINES
     this.plot.append("g").call(d3.axisLeft(this.yScale)).attr("id", "y-axis");
     this.plot
       .append("text")
@@ -78,7 +83,10 @@ class ScatterChart {
       .attr("text-anchor", "middle")
       .attr("transform", `translate(${-40}, ${this.innerHeight / 2}) rotate(270)`)
       .text(this.axes.y);
-
+    this.plot
+      .append("g")
+      .attr("opacity", "0.1")
+      .call(d3.axisLeft(this.yScale).tickSize(-this.innerWidth).tickFormat(""));
     // draw circles, DATA POINT
     this.plot
       .selectAll("circle")
@@ -87,13 +95,33 @@ class ScatterChart {
       .attr("cx", (d) => this.xScale(this.xValue(d)))
       .attr("cy", (d) => this.yScale(this.yValue(d)))
       .attr("fill", (d) => cScale(d["class"]))
-      .attr("opacity", 0.6)
-      .attr("r", 5);
+      .attr("stroke", "white")
+      .attr("stroke-width", "1px")
+      .attr("opacity", 0.7)
+      .attr("r", 6);
+    // draw LEGENDS
+    legendContainer
+      .selectAll("circle")
+      .data([...new Set(this.data.map((d) => d["class"]))])
+      .enter()
+      .append("circle")
+      .attr("cx", 6)
+      .attr("cy", (_, i) => 15 + i * 25)
+      .attr("fill", (d) => cScale(d))
+      .attr("r", 6);
+    legendContainer
+      .selectAll("text")
+      .data([...new Set(this.data.map((d) => d["class"]))])
+      .enter()
+      .append("text")
+      .attr("x", 18)
+      .attr("y", (_, i) => 15 + i * 25)
+      .style("alignment-baseline", "middle")
+      .text((d) => d);
   }
-  update(axes) {
-    this.axes = axes;
-    this.xScale.domain(d3.extent(this.data.map(this.xValue))).nice();
-    this.yScale.domain(d3.extent(this.data.map(this.yValue))).nice();
+  update() {
+    this.xScale.domain(this.xDomain).nice();
+    this.yScale.domain(this.yDomain).nice();
     const t = d3.transition().duration(1000);
     this.plot.select("#x-axis").transition(t).call(d3.axisBottom(this.xScale));
     this.plot.select("#y-axis").transition(t).call(d3.axisLeft(this.yScale));
@@ -114,26 +142,34 @@ class ScatterChart {
 async function main() {
   const dataset = await d3.csv(DATA_PATH);
   const layout = {
-    width: 600,
-    height: 600,
+    width: 800,
+    height: 400,
     margin: { left: 50, right: 50, top: 50, bottom: 50 },
     palette: ["#003f5c", "#bc5090", "#ffa600"],
   };
-  const xAttrSelect = d3.select("#xAttrSelect");
-  const yAttrSelect = d3.select("#yAttrSelect");
   const axes = {
-    x: xAttrSelect.node().value,
-    y: yAttrSelect.node().value,
+    x: d3.select("#x-attr-select").node().value,
+    y: d3.select("#y-attr-select").node().value,
+    xZero: false,
+    yZero: false,
   };
+  // ************ NOTE: PASS BY REFERENCE ************
   const chart = new ScatterChart(dataset, layout, axes);
-  xAttrSelect.on("change", (event) => {
+  d3.select("#x-attr-select").on("change", (event) => {
     axes.x = event.target.value;
-    chart.update(axes);
+    chart.update();
   });
-  yAttrSelect.on("change", (event) => {
+  d3.select("#y-attr-select").on("change", (event) => {
     axes.y = event.target.value;
-    chart.update(axes);
+    chart.update();
+  });
+  d3.select("#x-zero").on("change", () => {
+    axes.xZero = !axes.xZero;
+    chart.update();
+  });
+  d3.select("#y-zero").on("change", () => {
+    axes.yZero = !axes.yZero;
+    chart.update();
   });
 }
-
 main();
