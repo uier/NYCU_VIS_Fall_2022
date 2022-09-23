@@ -1,4 +1,4 @@
-const DATA_PATH = "./iris.csv";
+const DATA_PATH = "http://vis.lab.djosix.com:2020/data/iris.csv";
 
 class ScatterChart {
   constructor(data, layout, axes) {
@@ -88,9 +88,8 @@ class ScatterChart {
       .append("g")
       .attr("opacity", "0.1")
       .call(d3.axisLeft(this.yScale).tickSize(-this.innerWidth).tickFormat(""));
-    // prepare TOOLTIP
+    // draw circles, DATA POINT, add listeners to manipulate tooltip
     const tooltip = d3.select("div#tooltip");
-    // draw circles, DATA POINT
     this.plot
       .selectAll("circle")
       .data(this.data)
@@ -161,7 +160,7 @@ class ScatterChart {
 }
 
 async function main() {
-  const dataset = await d3.csv(DATA_PATH);
+  const dataset = (await d3.csv(DATA_PATH)).filter((d) => d["class"] !== "");
   const layout = {
     width: 800,
     height: 480,
@@ -193,4 +192,5 @@ async function main() {
     chart.update();
   });
 }
+
 main();
