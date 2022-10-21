@@ -1,4 +1,6 @@
-const DATA_PATH = "http://vis.lab.djosix.com:2020/data/iris.csv";
+const DATA_PATH = "../dataset/iris.csv";
+// used for uploaded homework
+// const DATA_PATH = "http://vis.lab.djosix.com:2020/data/iris.csv";
 
 class ScatterChart {
   constructor(data, layout, axes) {

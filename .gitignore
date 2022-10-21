@@ -1,2 +1,5 @@
 # standalone CLI build
 tailwindcss
+
+# macOS
+.DS_Store
