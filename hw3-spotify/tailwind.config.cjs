@@ -2,7 +2,11 @@
 module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    fontFamily: {
+      sans: ["IBM Plex Sans"],
+      serif: [],
+      mono: [],
+    },
   },
-  plugins: [require("daisyui")],
+  plugins: [require("tailwind-scrollbar"), require("daisyui")],
 };
