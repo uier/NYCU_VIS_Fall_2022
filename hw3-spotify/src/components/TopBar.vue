@@ -13,22 +13,22 @@ const { stats } = defineProps(["stats"]);
     <div class="flex-1 stats shadow">
       <div class="stat place-items-center">
         <div class="stat-title font-semibold opacity-80">Tracks</div>
-        <div class="stat-value text-secondary">{{ format("~s")(stats.numTracks) }}</div>
+        <div class="stat-value text-3xl text-secondary">{{ format("~s")(stats.numTracks) }}</div>
       </div>
 
       <div class="stat place-items-center">
         <div class="stat-title font-semibold opacity-80">Genre</div>
-        <div class="stat-value text-secondary">{{ format("~s")(stats.numGenres) }}</div>
+        <div class="stat-value text-3xl text-secondary">{{ format("~s")(stats.numGenres) }}</div>
       </div>
 
       <div class="stat place-items-center">
         <div class="stat-title font-semibold opacity-80">Artists</div>
-        <div class="stat-value text-secondary">{{ format("~s")(stats.numArtists) }}</div>
+        <div class="stat-value text-3xl text-secondary">{{ format("~s")(stats.numArtists) }}</div>
       </div>
 
       <div class="stat place-items-center">
         <div class="stat-title font-semibold opacity-80">Album</div>
-        <div class="stat-value text-secondary">{{ format("~s")(stats.numAlbums) }}</div>
+        <div class="stat-value text-3xl text-secondary">{{ format("~s")(stats.numAlbums) }}</div>
       </div>
     </div>
   </div>
