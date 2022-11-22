@@ -20,10 +20,10 @@ export function useSpotify() {
       .then((res) => {
         data.value = res;
         genres.value = [...new Set(data.value.map((d) => d.track_genre))].sort();
-        stats.numTracks = d3.count(data.value, (d) => d[""]);
-        stats.numArtists = d3.count(data.value, (d) => d.artists);
         stats.numGenres = genres.value.length;
-        stats.numAlbums = d3.count(data.value, (d) => d.album_name);
+        stats.numArtists = [...new Set(data.value.map((d) => d.artists))].length;
+        stats.numAlbums = [...new Set(data.value.map((d) => d.album_name))].length;
+        stats.numTracks = [...new Set(data.value.map((d) => d[""]))].length;
       })
       .catch((err) => (error.value = err))
       .finally(() => (isLoading.value = false));
