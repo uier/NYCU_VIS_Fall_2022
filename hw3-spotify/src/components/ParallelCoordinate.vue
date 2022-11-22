@@ -278,8 +278,7 @@ onMounted(async () => {
 
   d3.selectAll(".axis.track_genre .tick text").style("fill", color);
 
-  emit("update:modelValue", data.slice(0, 10));
-  // output.value = data.slice(0, 10);
+  emit("update:modelValue", data);
 
   function project(d) {
     return dimensions.map(function (p, i) {
@@ -362,8 +361,7 @@ onMounted(async () => {
     ctx.globalAlpha = d3.min([0.85 / Math.pow(selected.length, 0.3), 1]);
     render(selected);
 
-    emit("update:modelValue", selected.slice(0, 10));
-    // output.value = selected.slice(0, 10);
+    emit("update:modelValue", selected);
   }
 
   function d3_functor(v) {
@@ -373,7 +371,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div id="par-coord" class="w-full h-full" />
+  <div id="par-coord" class="flex-1 w-full h-full" />
 </template>
 
 <style scoped>

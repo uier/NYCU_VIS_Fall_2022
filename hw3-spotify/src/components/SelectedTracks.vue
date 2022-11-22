@@ -4,12 +4,14 @@ import { ref, defineProps, computed } from "vue";
 const props = defineProps(["selectedTracks"]);
 const sortBy = ref("popularity");
 const tracks = computed(() => {
-  return props.selectedTracks.sort((a, b) => {
-    if (["track_genre", "artists", "track_name"].includes(sortBy.value)) {
-      return a[sortBy.value] < b[sortBy.value] ? -1 : 1;
-    }
-    return b[sortBy.value] - a[sortBy.value];
-  });
+  return props.selectedTracks
+    .sort((a, b) => {
+      if (["track_genre", "artists", "track_name"].includes(sortBy.value)) {
+        return a[sortBy.value] < b[sortBy.value] ? -1 : 1;
+      }
+      return b[sortBy.value] - a[sortBy.value];
+    })
+    .slice(0, 30);
 });
 const columns = [
   { key: "track_genre", label: "Genre" },
@@ -46,7 +48,11 @@ const columns = [
       </thead>
       <tbody>
         <tr v-for="track in tracks" :key="track.track_id" class="hover:bg-zinc-700">
-          <td v-for="col in columns" :key="`${track.track_id}-${col.key}`" class="px-1">
+          <td
+            v-for="col in columns"
+            :key="`${track.track_id}-${col.key}`"
+            class="px-1 whitespace-nowrap"
+          >
             {{ track[col.key] }}
           </td>
         </tr>

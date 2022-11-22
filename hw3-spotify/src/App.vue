@@ -51,8 +51,8 @@ watchDebounced(
     </main>
     <footer class="w-full opacity-70 text-xs py-1 flex justify-between">
       <span class="italic"
-        >hint: choose genres from GENRE sidebar, and compare 2 ~ 10 genres by parallel coordinate.
-        data can be filtered by brushing on axes.</span
+        >hint: CHOOSE genres from sidebar and compare 2 ~ 10 genres by parallel coordinate. DATA can
+        be filtered by brushing on axes. TABLE shows top 30 tracks active in coordinate.</span
       >
       <span>Spotify Tracks VIS by 311553005 于子緯</span>
     </footer>
