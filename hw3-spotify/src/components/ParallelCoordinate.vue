@@ -1,14 +1,12 @@
 <script setup>
 import { renderQueue } from "../lib/renderQueue";
 import * as d3 from "d3";
-import { ref, onMounted, defineProps } from "vue";
+import { onMounted, defineProps, defineEmits } from "vue";
 
 const props = defineProps(["data", "selectedGenres"]);
-
-const output = ref("");
+const emit = defineEmits(["update:modelValue"]);
 
 onMounted(async () => {
-  // const margin = { top: 36, right: 36, bottom: 360, left: 120 };
   const margin = { top: 36, right: 36, bottom: 12, left: 120 };
 
   const devicePixelRatio = window.devicePixelRatio || 1;
@@ -187,7 +185,7 @@ onMounted(async () => {
       description: "Mode",
       type: types["Number"],
       scale: d3.scalePoint().range([innerHeight, 0]),
-      axis: d3.axisRight().tickFormat((d) => tickLabel.mode[d]),
+      axis: d3.axisLeft().tickFormat((d) => tickLabel.mode[d]),
     },
   ];
 
@@ -242,7 +240,6 @@ onMounted(async () => {
   ctx.clearRect(0, 0, width, height);
   ctx.globalAlpha = d3.min([0.85 / Math.pow(data.length, 0.3), 1]);
   render(data);
-  // render(data.filter((d) => props.selectedGenres.includes(d.track_genre)));
 
   axes
     .append("g")
@@ -281,8 +278,8 @@ onMounted(async () => {
 
   d3.selectAll(".axis.track_genre .tick text").style("fill", color);
 
-  // output.text(d3.tsvFormat(data.slice(0, 24)));
-  output.value = d3.tsvFormat(data.slice(0, 24));
+  emit("update:modelValue", data.slice(0, 10));
+  // output.value = data.slice(0, 10);
 
   function project(d) {
     return dimensions.map(function (p, i) {
@@ -365,10 +362,9 @@ onMounted(async () => {
     ctx.globalAlpha = d3.min([0.85 / Math.pow(selected.length, 0.3), 1]);
     render(selected);
 
-    // output.text(d3.tsvFormat(selected.slice(0, 24)));
-    output.value = d3.tsvFormat(selected.slice(0, 24));
+    emit("update:modelValue", selected.slice(0, 10));
+    // output.value = selected.slice(0, 10);
   }
-  // });
 
   function d3_functor(v) {
     return typeof v === "function" ? v : () => v;
@@ -385,78 +381,63 @@ onMounted(async () => {
   min-width: 760px;
 }
 
-#par-coord >>> {
-  display: block;
-}
-
-#par-coord >>> svg,
-#par-coord >>> canvas {
+:deep(svg),
+:deep(canvas) {
   font: 10px sans-serif;
   position: absolute;
 }
 
-#par-coord >>> canvas {
+:deep(canvas) {
   opacity: 0.9;
   pointer-events: none;
 }
 
-#par-coord >>> .axis .title {
+:deep(.axis .title) {
   font-size: 10px;
   transform: rotate(-21deg) translate(-5px, -6px);
   fill: #fbbd23;
 }
 
-#par-coord >>> .axis line,
-#par-coord >>> .axis path {
+:deep(.axis line),
+:deep(.axis path) {
   fill: none;
   stroke: #666;
   stroke-width: 1px;
 }
 
-#par-coord >>> .axis .tick text {
+:deep(.axis .tick text) {
   fill: #d7cccc;
   opacity: 0.2;
   pointer-events: none;
 }
 
-#par-coord >>> .axis.manufac_name .tick text,
-#par-coord >>> .axis.food_group .tick text {
-  opacity: 1;
-}
-
-#par-coord >>> .axis:hover line,
-#par-coord >>> .axis:hover path,
-#par-coord >>> .axis.active line,
-#par-coord >>> .axis.active path {
-  fill: none;
-  stroke: #d7cccc;
-  stroke-width: 1px;
-}
-
-#par-coord >>> .axis:hover .title {
-  font-weight: bold;
-}
-
-#par-coord >>> .axis:hover .tick text {
-  opacity: 1;
-}
-
-#par-coord >>> .axis.active .title {
-  font-weight: bold;
-}
-
-#par-coord >>> .axis.active .tick text {
-  opacity: 1;
-  font-weight: bold;
-}
-
-#par-coord >>> .axis.track_genre .tick text {
+:deep(.axis.track_genre .tick text) {
   opacity: 1;
   font-size: 12px;
   font-weight: bold;
 }
 
-#par-coord >>> .brush .extent {
+:deep(.axis:hover line),
+:deep(.axis:hover path),
+:deep(.axis.active line),
+:deep(.axis.active path) {
+  fill: none;
+  stroke: #d7cccc;
+  stroke-width: 1px;
+}
+
+:deep(.axis:hover .title),
+:deep(.axis.active .title) {
+  font-weight: bold;
+}
+
+:deep(.axis:hover .tick text),
+:deep(.axis.active .tick text) {
+  opacity: 1;
+  font-weight: bold;
+}
+
+:deep(.brush .extent) {
   fill-opacity: 0.3;
   stroke: #d7cccc;
   stroke-width: 1px;

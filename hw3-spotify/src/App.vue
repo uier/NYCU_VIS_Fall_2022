@@ -5,9 +5,21 @@ import TopBar from "./components/TopBar.vue";
 import SideBar from "./components/SideBar.vue";
 import LoadingIndicator from "./components/LoadingIndicator.vue";
 import ParallelCoordinate from "./components/ParallelCoordinate.vue";
+import SelectedTracks from "./components/SelectedTracks.vue";
+import { watchDebounced } from "@vueuse/core";
 
 const { isLoading, data, error, genres, stats } = useSpotify();
 const selectedGenres = ref(["anime", "blues", "k-pop", "sleep", "study"]);
+const selectedTracks = ref([]);
+
+const debouncedSelectedGenre = ref(selectedGenres.value);
+watchDebounced(
+  selectedGenres,
+  () => {
+    debouncedSelectedGenre.value = selectedGenres.value;
+  },
+  { debounce: 500, maxWait: 1000 }
+);
 </script>
 
 <template>
@@ -26,14 +38,23 @@ const selectedGenres = ref(["anime", "blues", "k-pop", "sleep", "study"]);
             </details>
           </div>
         </div>
-        <parallel-coordinate
-          v-else
-          :key="selectedGenres"
-          :data="data"
-          :selectedGenres="selectedGenres"
-        />
+        <template v-else>
+          <parallel-coordinate
+            :key="debouncedSelectedGenre"
+            :data="data"
+            :selectedGenres="debouncedSelectedGenre"
+            v-model="selectedTracks"
+          />
+          <selected-tracks :selectedTracks="selectedTracks" />
+        </template>
       </div>
     </main>
-    <footer class="w-full opacity-70 text-xs py-1">Spotify Tracks VIS by 311553005 于子緯</footer>
+    <footer class="w-full opacity-70 text-xs py-1 flex justify-between">
+      <span class="italic"
+        >hint: choose genres from GENRE sidebar, and compare 2 ~ 10 genres by parallel coordinate.
+        data can be filtered by brushing on axes.</span
+      >
+      <span>Spotify Tracks VIS by 311553005 于子緯</span>
+    </footer>
   </div>
 </template>

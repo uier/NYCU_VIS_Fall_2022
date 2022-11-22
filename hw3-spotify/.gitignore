@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+hw3_311553005
 dist-ssr
 *.local
 
