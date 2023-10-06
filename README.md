@@ -1,6 +1,6 @@
 # NYCU VIS Fall 2022
 
-✨[DEMO WEBSITE HERE](https://uier.github.io/nycu-vis-fall-2022/index.html)✨
+✨[DEMO WEBSITE HERE](https://uier.github.io/NYCU_VIS_Fall_2022/)✨
 
 ## Develop `index.html`
 
