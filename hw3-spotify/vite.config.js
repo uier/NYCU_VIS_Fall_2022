@@ -8,4 +8,5 @@ export default defineConfig({
     outDir: "hw3_311553005",
     assetsDir: "./",
   },
+  base: "./",
 });
