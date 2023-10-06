@@ -1,7 +1,7 @@
 import { onMounted, reactive, ref } from "vue";
 import * as d3 from "d3";
 
-const DATA_PATH = "../../../dataset/spotify_tracks.csv";
+const DATA_PATH = "https://uier.github.io/NYCU_VIS_Fall_2022/dataset/spotify_tracks.csv";
 // used for uploaded homework
 // const DATA_PATH = "http://vis.lab.djosix.com:2020/data/spotify_tracks.csv";
 
